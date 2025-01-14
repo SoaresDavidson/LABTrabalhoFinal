@@ -1,4 +1,4 @@
-gtifrom PIL import Image
+from PIL import Image
 
 class imagem:
     def __init__(self, img):
