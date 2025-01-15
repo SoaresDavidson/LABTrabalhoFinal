@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask HTML Page</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block body %}
+    <form action ="/" method="post">
+        <button type="submit">Send</button>
+    </form>
     <h1>Welcome to Flask!</h1>
     <p>This is an HTML page served by Flask.</p>
-</body>
-</html>
+{% endblock %}
