@@ -19,4 +19,6 @@ class Imagem:
 if __name__ == "__main__":
     p = Imagem("/home/davi/Imagens/Wallpapers/mistborn.jpeg")
     p.show()
+    davi pfvr come meu cuzinho
     print("quero bucetaaaaaaa!!!")
+
