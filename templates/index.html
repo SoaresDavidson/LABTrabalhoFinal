@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
-    <form action ="/" method="post">
+    <form action ="/" method="post" enctype="multipart/form-data">
         <button type="submit">Send</button>
+        <input type="file" id="fileInput" name="imagem">
+        <p id="fileName"></p>
     </form>
     <h1>Welcome to Flask!</h1>
     <p>This is an HTML page served by Flask.</p>
