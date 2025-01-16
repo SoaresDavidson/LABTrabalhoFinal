@@ -57,7 +57,7 @@ def home():
         # Aplica o filtro escolhido
         opcao = request.form['opcao']
         connection.aplicar_filtro(opcao=opcao,imagem=imagem)
-        image_path = os.path.join(upload_folder, f"{filename}_{opcao}.png")
+        image_path = os.path.join(upload_folder, filename + opcao)
         imagem.save(image_path)
         
         # Passa o caminho da imagem para o template
