@@ -1,7 +1,7 @@
 from PIL import Image, ImageFilter, ImageOps, ImageEnhance
 
 class Filtro:
-    def aplicar(self, imagem):
+    def aplicar(imagem):
         pass
 
 class EscalaCinza(Filtro):
@@ -9,13 +9,13 @@ class EscalaCinza(Filtro):
         return imagem.convert("L")
 
 class PretoBranco(Filtro):
-    def aplicar(self, imagem):
+    def aplicar(imagem):
         imagemcinza = imagem.convert("L")
         limiar = 128
         return imagemcinza.point(lambda p: 255 if p > limiar else 0)
 
 class Cartoon(Filtro):
-    def aplicar(self, imagem):
+    def aplicar(imagem):
         imagemCinza = imagem.convert("L")
         imagemSuavizada = imagemCinza.filter(ImageFilter.SMOOTH_MORE)
         bordas = imagem.filter(ImageFilter.FIND_EDGES)
