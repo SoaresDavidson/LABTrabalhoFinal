@@ -5,14 +5,14 @@ from werkzeug.utils import secure_filename
 import requests
 import uuid
 import os
-
+import io  # Para trabalhar com fluxos de bytes
 
 class Filtro:
     def aplicar(self, imagem):
         pass
 
 class EscalaCinza(Filtro):
-    def aplicar(imagem):
+    def aplicar(self, imagem):
         return imagem.convert("L")
 
 class PretoBranco(Filtro):
@@ -32,18 +32,18 @@ class Cartoon(Filtro):
         return imagemCartoon
 
 class FotoNegativa(Filtro):
-    def aplicar(imagem):
+    def aplicar(self, imagem):
         return ImageOps.invert(imagem)
 
 class Contorno(Filtro):
-    def aplicar(imagem):
+    def aplicar(self, imagem):
         return imagem.filter(ImageFilter.CONTOUR)
 
 class Blurred(Filtro):
-    def aplicar(imagem):
+    def aplicar(self, imagem):
         return imagem.filter(ImageFilter.BLUR)
 
-
+# Flask setup
 app = Flask(__name__)
 
 app.secret_key = 'vitinhoseulindo'
@@ -52,17 +52,11 @@ class Download:
     def baixar(self, link):
         resposta = requests.get(link)
         if resposta.status_code == 200:
-            with open (link, 'wb') as arqv:
-                arqv.write(resposta.content)
-                return arqv
-
+            # Aqui, transformamos o conteúdo da resposta (bytes) em uma imagem
+            img = Image.open(io.BytesIO(resposta.content))  # Abre a imagem usando os bytes
+            return img
         else:
             return False
-
-# Configure the upload folder
-#UPLOAD_FOLDER = 'static/uploads'
-#os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-#app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/', methods=["GET", "POST"])
 def home():
@@ -70,46 +64,54 @@ def home():
         if 'user_id' not in session:
             session['user_id'] = str(uuid.uuid4())
         user_id = session['user_id']
-        upload_folder = f'uploads/{user_id}'
+        
+        # Cria o diretório onde a imagem será salva
+        upload_folder = f'static/uploads/{user_id}'
         os.makedirs(upload_folder, exist_ok=True)
-        # Check if an image file is uploaded
+        
+        # Obtenha a URL ou arquivo enviado
         url = request.form.get('link')
         imagem = request.files['imagem']
+        
         if not imagem and not url:
             return "Nenhuma imagem foi provida", 400
+        
         if imagem and imagem.filename == '':
             return "No selected file", 400
+        
         elif imagem:
             filename = secure_filename(imagem.filename)
+            imagem = Image.open(imagem)  # Abrindo a imagem enviada diretamente pelo formulário
         else:
             download = Download()
-            res = download.baixar(url)
-            if res == False: return "URL is not valid"
-            imagem = download
-            filename = url
+            imagem = download.baixar(url)  # Baixando e abrindo a imagem
+            if imagem == False: 
+                return "URL is not valid"
+            filename = os.path.basename(url)
+        
+        # Aplica o filtro escolhido
         opcao = request.form['opcao']
         if opcao == 'escala':
-            imagem = EscalaCinza.aplicar(imagem=imagem)
+            imagem = EscalaCinza().aplicar(imagem)
         elif opcao == 'pretobranco':
-            imagem = PretoBranco.aplicar(imagem=imagem)
+            imagem = PretoBranco().aplicar(imagem)
         elif opcao == 'cartoon':
-            imagem = Cartoon.aplicar(imagem=imagem)
+            imagem = Cartoon().aplicar(imagem)
         elif opcao == 'negativa':
-            imagem = FotoNegativa.aplicar(imagem=imagem)
+            imagem = FotoNegativa().aplicar(imagem)
         elif opcao == 'contorno':
-            imagem = Contorno.aplicar(imagem=imagem)
+            imagem = Contorno().aplicar(imagem)
         else:
-            imagem = Blurred.aplicar(imagem=imagem)
-        image_path = os.path.join(upload_folder, filename + opcao)
+            imagem = Blurred().aplicar(imagem)
+        
+        # Garante que a imagem salva tenha a extensão correta
+        image_path = os.path.join(upload_folder, f"{filename}_{opcao}.png")
         imagem.save(image_path)
- 
-        # Save the uploaded file
-        #file_path = os.path.join(app.config['UPLOAD_FOLDER'], imagem.filename)
-        #imagem.save(file_path)
-        # Pass the file path to the template
+        
+        # Passa o caminho da imagem para o template
         return render_template("imagem.html", imagem=image_path)
+    
     return render_template('index.html')
-
 
 if __name__ == '__main__':
     app.run(debug=True)
