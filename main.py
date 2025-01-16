@@ -46,6 +46,8 @@ class Blurred(Filtro):
 
 app = Flask(__name__)
 
+app.secret_key = 'vitinhoseulindo'
+
 class Download:
     def baixar(self, link):
         resposta = requests.get(link)

@@ -1,10 +1,23 @@
 {% extends "layout.html" %}
 {% block body %}
     <form action ="/" method="post" enctype="multipart/form-data">
-        <button type="submit">Send</button>
+        <button type="submit">Send File</button>
         <input type="file" id="fileInput" name="imagem">
         <p id="fileName"></p>
+        <br>
+        <br>
+        <button type="submit">Send URL</button>
+        <input type="text" id="url" name="link">
+        <h2>Escolha uma opção de filtro para aplicar</h2>
+        <label for="opcao">Filtro:</label>
+        <select name="opcao" id="opcao">
+            <option value="escala">Escala Cinza</option>
+            <option value="pretobranco">Preto e Branco</option>
+            <option value="cartoon">Cartoon</option>
+            <option value="negativa">Escala Negativa</option>
+            <option value="contorno">Contorno</option>
+            <option value="blur">Blurred</option>
+        </select>
     </form>
-    <h1>Welcome to Flask!</h1>
-    <p>This is an HTML page served by Flask.</p>
+  
 {% endblock %}
