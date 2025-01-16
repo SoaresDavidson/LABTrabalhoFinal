@@ -1,48 +1,13 @@
 from PIL import Image, ImageFilter, ImageOps, ImageEnhance
-from modules import imagem, download, Filtros
+from modules.Filtros import EscalaCinza,PretoBranco,Cartoon,Contorno,Blurred,FotoNegativa
+from modules.imagem import Imagem
+from modules.download import Download
+import connection
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.utils import secure_filename
 import requests
 import uuid
 import os
-
-
-class Filtro:
-    def aplicar(self, imagem):
-        pass
-
-class EscalaCinza(Filtro):
-    def aplicar(imagem):
-        return imagem.convert("L")
-
-class PretoBranco(Filtro):
-    def aplicar(self, imagem):
-        imagemcinza = imagem.convert("L")
-        limiar = 128
-        return imagemcinza.point(lambda p: 255 if p > limiar else 0)
-
-class Cartoon(Filtro):
-    def aplicar(self, imagem):
-        imagemCinza = imagem.convert("L")
-        imagemSuavizada = imagemCinza.filter(ImageFilter.SMOOTH_MORE)
-        bordas = imagem.filter(ImageFilter.FIND_EDGES)
-        imagemCartoon = Image.blend(imagemSuavizada.convert("RGB"), bordas.convert("RGB"), alpha=0.3) 
-        imagemCartoon = ImageEnhance.Contrast(imagemCartoon).enhance(1.5)  
-        imagemCartoon = ImageEnhance.Brightness(imagemCartoon).enhance(1.2) 
-        return imagemCartoon
-
-class FotoNegativa(Filtro):
-    def aplicar(imagem):
-        return ImageOps.invert(imagem)
-
-class Contorno(Filtro):
-    def aplicar(imagem):
-        return imagem.filter(ImageFilter.CONTOUR)
-
-class Blurred(Filtro):
-    def aplicar(imagem):
-        return imagem.filter(ImageFilter.BLUR)
-
 
 app = Flask(__name__)
 
@@ -88,18 +53,7 @@ def home():
             imagem = download
             filename = url
         opcao = request.form['opcao']
-        if opcao == 'escala':
-            imagem = EscalaCinza.aplicar(imagem=imagem)
-        elif opcao == 'pretobranco':
-            imagem = PretoBranco.aplicar(imagem=imagem)
-        elif opcao == 'cartoon':
-            imagem = Cartoon.aplicar(imagem=imagem)
-        elif opcao == 'negativa':
-            imagem = FotoNegativa.aplicar(imagem=imagem)
-        elif opcao == 'contorno':
-            imagem = Contorno.aplicar(imagem=imagem)
-        else:
-            imagem = Blurred.aplicar(imagem=imagem)
+        connection.aplicar_filtro(opcao=opcao,imagem=imagem)
         image_path = os.path.join(upload_folder, filename + opcao)
         imagem.save(image_path)
  

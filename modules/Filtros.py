@@ -5,17 +5,20 @@ class Filtro:
         pass
 
 class EscalaCinza(Filtro):
+    @staticmethod
     def aplicar(imagem):
         return imagem.convert("L")
 
 class PretoBranco(Filtro):
-    def aplicar(self, imagem):
+    @staticmethod
+    def aplicar(imagem):
         imagemcinza = imagem.convert("L")
         limiar = 128
         return imagemcinza.point(lambda p: 255 if p > limiar else 0)
 
 class Cartoon(Filtro):
-    def aplicar(self, imagem):
+    @staticmethod
+    def aplicar(imagem):
         imagemCinza = imagem.convert("L")
         imagemSuavizada = imagemCinza.filter(ImageFilter.SMOOTH_MORE)
         bordas = imagem.filter(ImageFilter.FIND_EDGES)
@@ -25,14 +28,17 @@ class Cartoon(Filtro):
         return imagemCartoon
 
 class FotoNegativa(Filtro):
+    @staticmethod
     def aplicar(imagem):
         return ImageOps.invert(imagem)
 
 class Contorno(Filtro):
+    @staticmethod
     def aplicar(imagem):
         return imagem.filter(ImageFilter.CONTOUR)
 
 class Blurred(Filtro):
+    @staticmethod
     def aplicar(imagem):
         return imagem.filter(ImageFilter.BLUR)
 
