@@ -88,6 +88,8 @@ img {
     max-height: 500px; /* A altura máxima será 500px */
     width: auto;
     height: auto;
+    margin: 0 auto;
+    display: block;
 }
 .comeback {
     text-align: center;
