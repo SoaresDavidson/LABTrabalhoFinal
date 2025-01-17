@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% block body %}
     <form action ="/" method="post" enctype="multipart/form-data">
-        <button type="submit">Send File</button>
+        <button type="submit" name="submit_type" value="file">Send File</button>
         <input type="file" id="fileInput" name="imagem">
         <p id="fileName"></p>
         <br>
         <br>
-        <button type="submit">Send URL</button>
+        <button type="submit" name="submit_type" value="url">Send URL</button>
         <input type="text" id="url" name="link" placeholder="Enter URL">
         <h2>Escolha uma opção de filtro para aplicar</h2>
         <label for="opcao">Filtro:</label>
