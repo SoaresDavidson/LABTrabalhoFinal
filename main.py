@@ -10,6 +10,21 @@ import uuid
 import os
 import io  # Para trabalhar com fluxos de bytes
 
+def file_sended(uploaded_file, upload_folder:str):
+        filename = secure_filename(uploaded_file.filename)
+        file_path = os.path.join(upload_folder, filename)
+        uploaded_file.save(file_path)  # Save the uploaded file
+        imagem = Image.open(file_path) # Abrindo a imagem enviada diretamente pelo formulário
+        return imagem, filename
+
+def url_sended(url):
+    download = Download()
+    imagem = download.baixar(url)  # Baixando e abrindo a imagem
+    if imagem == False: 
+        return render_template('error.html', mensagem="URL inválida")
+    filename = os.path.basename(url)
+    return imagem, filename
+
 app = Flask(__name__)
 
 app.secret_key = 'vitinhoseulindo'
@@ -20,35 +35,25 @@ def home():
         if 'user_id' not in session:
             session['user_id'] = str(uuid.uuid4())
         user_id = session['user_id']
-        
+        submit_type = request.form.get("submit_type")
         # Cria o diretório onde a imagem será salva
         upload_folder = f'static/uploads/{user_id}'
         os.makedirs(upload_folder, exist_ok=True)
-        
-        # Obtenha a URL ou arquivo enviado
-        url = request.form.get('link')
-        #imagem = request.files.get('imagem')
-        uploaded_file = request.files['imagem']
-        if not uploaded_file and not url:
-            return render_template('error.html', mensagem="Nenhuma imagem foi provida")
+    
+        if submit_type == "file":
+            uploaded_file = request.files['imagem']
 
-        if uploaded_file and uploaded_file.filename == '':
-            return render_template('error.html', mensagem="Arquivo não selecionado")
-        
-        elif uploaded_file:
-            filename = secure_filename(uploaded_file.filename)
-            file_path = os.path.join(upload_folder, filename)
-            uploaded_file.save(file_path)  # Save the uploaded file
-            imagem = Image.open(file_path) # Abrindo a imagem enviada diretamente pelo formulário
+            if not uploaded_file and not url:
+                return render_template('error.html', mensagem="Nenhuma imagem foi provida")
+
+            if uploaded_file and uploaded_file.filename == '':
+                return render_template('error.html', mensagem="Arquivo não selecionado")
+            imagem,filename = file_sended(uploaded_file=uploaded_file, upload_folder=upload_folder)
+
+        elif submit_type == "url":
+            url = request.form.get('link')  # Obtenha a URL ou arquivo enviado
+            imagem,filename = url_sended(url=url)
             
-        elif url:
-            download = Download()
-            imagem = download.baixar(url)  # Baixando e abrindo a imagem
-            if imagem == False: 
-                return render_template('error.html', mensagem="URL inválida")
-            filename = os.path.basename(url)
-        
-        # Aplica o filtro escolhido
         opcao = request.form['opcao']
         imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
         image_path = os.path.join(upload_folder, filename)
@@ -61,3 +66,5 @@ def home():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
+
+
