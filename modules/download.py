@@ -12,8 +12,9 @@ class Download:
             if resposta.status_code == 200:
                 # Abrir a imagem diretamente a partir dos bytes recebidos
                 img = Image.open(io.BytesIO(resposta.content))  # Abre a imagem a partir do buffer de bytes
-                img.show()  # Exibe a imagem (opcional)
-                img.save('imagemBaixada.jpg')  # Salva a imagem
+                return img
+                # img.show()  # Exibe a imagem (opcional)
+                # img.save('imagemBaixada.jpg')  # Salva a imagem
                 print("Imagem baixada com sucesso!")
             elif resposta.status_code == 404:
                 print("O link fornecido não foi encontrado e o download não foi realizado.")

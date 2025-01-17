@@ -14,16 +14,6 @@ app = Flask(__name__)
 
 app.secret_key = 'vitinhoseulindo'
 
-class Download:
-    def baixar(self, link):
-        resposta = requests.get(link)
-        if resposta.status_code == 200:
-            # Aqui, transformamos o conteúdo da resposta (bytes) em uma imagem
-            img = Image.open(io.BytesIO(resposta.content))  # Abre a imagem usando os bytes
-            return img
-        else:
-            return False
-
 @app.route('/', methods=["GET", "POST"])
 def home():
     if request.method == "POST":
@@ -49,7 +39,7 @@ def home():
             filename = secure_filename(uploaded_file.filename)
             file_path = os.path.join(upload_folder, filename)
             uploaded_file.save(file_path)  # Save the uploaded file
-            imagem = Image.open(file_path)  # Open the saved file # Abrindo a imagem enviada diretamente pelo formulário
+            imagem = Image.open(file_path) # Abrindo a imagem enviada diretamente pelo formulário
             
         elif url:
             download = Download()
