@@ -9,6 +9,7 @@ import requests
 import uuid
 import os
 import io  # Para trabalhar com fluxos de bytes
+
 app = Flask(__name__)
 
 app.secret_key = 'vitinhoseulindo'
@@ -36,17 +37,19 @@ def home():
         
         # Obtenha a URL ou arquivo enviado
         url = request.form.get('link')
-        imagem = request.files['imagem']
-        
-        if not imagem and not url:
+        #imagem = request.files.get('imagem')
+        uploaded_file = request.files['imagem']
+        if not uploaded_file and not url:
             return render_template('error.html', mensagem="Nenhuma imagem foi provida")
 
-        if imagem and imagem.filename == '':
+        if uploaded_file and uploaded_file.filename == '':
             return render_template('error.html', mensagem="Arquivo não selecionado")
         
-        elif imagem:
-            filename = secure_filename(imagem.filename)
-            imagem = Image.open(imagem)  # Abrindo a imagem enviada diretamente pelo formulário
+        elif uploaded_file:
+            filename = secure_filename(uploaded_file.filename)
+            file_path = os.path.join(upload_folder, filename)
+            uploaded_file.save(file_path)  # Save the uploaded file
+            imagem = Image.open(file_path)  # Open the saved file # Abrindo a imagem enviada diretamente pelo formulário
             
         elif url:
             download = Download()
@@ -57,9 +60,9 @@ def home():
         
         # Aplica o filtro escolhido
         opcao = request.form['opcao']
-        imagem =connection.aplicar_filtro(opcao=opcao,imagem=imagem)
+        imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
         image_path = os.path.join(upload_folder, filename)
-        imagem.save(image_path)
+        imagem_processada.save(image_path)
         
         # Passa o caminho da imagem para o template
         return render_template("imagem.html", imagem=image_path)
@@ -67,4 +70,4 @@ def home():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
