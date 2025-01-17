@@ -55,7 +55,7 @@ def home():
                 url = request.form.get('link')  # Obtenha a URL ou arquivo enviado
                 imagem,filename = url_sended(url=url)
             except Exception:
-                return render_template('error.html', mensagem="Nenhuma URL foi provida")    
+                return render_template('error.html', mensagem="URL inválida")    
         opcao = request.form['opcao']
         imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
         image_path = os.path.join(upload_folder, filename)
