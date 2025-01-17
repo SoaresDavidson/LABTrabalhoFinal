@@ -1,32 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
+
 body {
-    height: 100vh; 
+    height: 100vh;
     display: flex;
     gap: 10px;
-    justify-content: center; 
-    align-items: center; 
-    background-color: #afbfd7; 
+    justify-content: center;
+    align-items: center;
+    background-color: #2c3e50; 
+    font-family: "Cabin", sans-serif;
+    font-weight: 400;
+    color: #ecf0f1; 
+    margin: 0;
 }
 
-input[type="submit"] {
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
+form {
+    background-color: #34495e;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    text-align: center;
 }
 
-input[type="text"] {
-    padding: 10px;
-    width: 80%;
-    border-radius: 5px;
+h2 {
+    color: #ecf0f1; 
+    margin-bottom: 20px;
 }
 
 button {
-    background-color: #4CAF50;
+    cursor: pointer;
+    background-color: #2980b9;
     color: white;
     border-radius: 5px;
+    padding: 10px 20px;
+    margin: 10px 0;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+}
+
+button:hover {
+    background-color: #1f618d; 
+    transform: translateY(-2px);
+}
+
+input[type="file"], input[type="text"], select {
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    background-color: #34495e; 
+    color: #ecf0f1; 
+    border: 1px solid #7f8c8d; 
+    margin: 10px 0;
+}
+
+input[type="file"]:hover, input[type="text"]:hover, select:hover {
+    border-color: #2980b9; 
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: #2980b9; 
+    outline: none;
+}
+
+#fileName {
+    color: #f39c12;
+    margin-top: 10px;
 }
 
 select {
     cursor: pointer;
-    border-radius: 5px;
+}
+
+label {
+    color: #ecf0f1; 
+    font-size: 16px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+br {
+    display: block;
+    margin-bottom: 10px;
+}
+img {
+    max-width: 100%;  /* A largura máxima será 100% do seu contêiner */
+    max-height: 500px; /* A altura máxima será 500px */
+    width: auto;
+    height: auto;
+}
+.comeback {
+    text-align: center;
+    margin: 0 auto;
+    text-decoration: none;
+    color:#2980b9;
+}
+.comeback:link {
+   
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.comeback:hover {
+    color: #106faf;
+    text-decoration: underline;
+}
+
+.Return {
+   text-align: center;
+   margin: 0 auto;
+}
+.textImg {
+    width: 100%;
+    height: 100%;
+    text-align: center;
 }

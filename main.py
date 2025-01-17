@@ -39,25 +39,26 @@ def home():
         imagem = request.files['imagem']
         
         if not imagem and not url:
-            return "Nenhuma imagem foi provida", 400
-        
+            return render_template('error.html', mensagem="Nenhuma imagem foi provida")
+
         if imagem and imagem.filename == '':
-            return "No selected file", 400
+            return render_template('error.html', mensagem="Arquivo não selecionado")
         
         elif imagem:
             filename = secure_filename(imagem.filename)
             imagem = Image.open(imagem)  # Abrindo a imagem enviada diretamente pelo formulário
-        else:
+            
+        elif url:
             download = Download()
             imagem = download.baixar(url)  # Baixando e abrindo a imagem
             if imagem == False: 
-                return "URL is not valid"
+                return render_template('error.html', mensagem="URL inválida")
             filename = os.path.basename(url)
         
         # Aplica o filtro escolhido
         opcao = request.form['opcao']
-        connection.aplicar_filtro(opcao=opcao,imagem=imagem)
-        image_path = os.path.join(upload_folder, filename + opcao)
+        imagem =connection.aplicar_filtro(opcao=opcao,imagem=imagem)
+        image_path = os.path.join(upload_folder, filename)
         imagem.save(image_path)
         
         # Passa o caminho da imagem para o template

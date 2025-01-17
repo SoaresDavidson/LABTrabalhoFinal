@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="error-container">
+        <h1>Erro: {{ mensagem }}</h1>
+        <p>Por favor, tente novamente mais tarde ou forneça os dados corretos.</p>
+        <a href="/" class="comeback">Clique aqui para voltar à página inicial</a>
+    </div>
+</body>
+</html>

@@ -20,6 +20,8 @@ class Imagem:
     def __getattr__(self, name):
         return getattr(self.__img ,name)
 
+        
+
 if __name__ == "__main__":
     p = Imagem("/home/davi/Imagens/Wallpapers/mistborn.jpeg")
     p.show()
