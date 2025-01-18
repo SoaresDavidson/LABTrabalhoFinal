@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
 <div align-items="center">
-<img src="{{ url_for('static', filename=imagem)}}"alt="imagem">
-<h3>Aqui está sua imagem!</h3>
-<form action="/" method="get">
-    <button type="Submit">Voltar</button>
+<img src={{imagem}} alt="imagem">
+<h3 class="textImg">Aqui está sua imagem!</h3>
+<form action="/" method="get" class="Return">
+    <button type="Submit" >Voltar</button>
 </form>
 </div>
 {% endblock %}

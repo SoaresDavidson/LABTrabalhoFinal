@@ -1,22 +1,28 @@
 {% extends "layout.html" %}
 {% block body %}
+    {% if error_message %}
+    <div class="mensagem_erro">
+        {{ error_message }}
+    </div>
+    
+    {% endif %}
     <form action ="/" method="post" enctype="multipart/form-data">
-        <button type="submit">Send File</button>
+        <button type="submit" name="submit_type" value="file">Send File</button>
         <input type="file" id="fileInput" name="imagem">
         <p id="fileName"></p>
         <br>
         <br>
-        <button type="submit">Send URL</button>
-        <input type="text" id="url" name="link">
+        <button type="submit" name="submit_type" value="url">Send URL</button>
+        <input type="text" id="url" name="link" placeholder="Enter URL">
         <h2>Escolha uma opção de filtro para aplicar</h2>
         <label for="opcao">Filtro:</label>
         <select name="opcao" id="opcao">
             <option value="escala">Escala Cinza</option>
-            <option value="pretobranco">Preto e Branco</option>
+            <option value="pretoBranco">Preto e Branco</option>
             <option value="cartoon">Cartoon</option>
             <option value="negativa">Escala Negativa</option>
             <option value="contorno">Contorno</option>
-            <option value="blur">Blurred</option>
+            <option value="blurred">Blurred</option>
         </select>
     </form>
   

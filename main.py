@@ -1,33 +1,33 @@
 from PIL import Image, ImageFilter, ImageOps, ImageEnhance
-from modules.Filtros import Filtro, EscalaCinza, PretoBranco, Cartoon, Blurred, Contorno, FotoNegativa
+from modules.Filtros import EscalaCinza,PretoBranco,Cartoon,Contorno,Blurred,FotoNegativa
+from modules.imagem import Imagem
+from modules.download import Download
+import connection
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.utils import secure_filename
 import requests
 import uuid
 import os
-import io
+import io  # Para trabalhar com fluxos de bytes
+
+def file_sended(uploaded_file, upload_folder:str):
+        filename = secure_filename(uploaded_file.filename)
+        file_path = os.path.join(upload_folder, filename)
+        uploaded_file.save(file_path)  # Save the uploaded file
+        imagem = Image.open(file_path) # Abrindo a imagem enviada diretamente pelo formulário
+        return imagem, filename
+
+def url_sended(url):
+    download = Download()
+    imagem = download.baixar(url)  # Baixando e abrindo a imagem
+    if imagem == False: 
+        return render_template('error.html', mensagem="URL inválida")
+    filename = os.path.basename(url)
+    return imagem, filename
 
 app = Flask(__name__)
 
 app.secret_key = 'vitinhoseulindo'
-
-class Download:
-    def baixar(link):
-        resposta = requests.get(link)
-        conteudo_resposta = resposta.headers.get('Content-Type')
-        if 'image' in conteudo_resposta:
-            if resposta.status_code == 200:
-                with open ('imagemBaixada.jpg', 'wb') as arqv:
-                    arqv.write(resposta.content)
-                    print ("Imagem baixada com sucesso!")
-                    return arqv
-            elif resposta.status_code == 404:
-                print("O link fornecido não foi encontrado e o download não foi realizado.")
-            elif resposta.status_code == 403:
-                print("O link é de um conteúdo de acesso proibido.")
-        else:
-            print("O link fornecido não é uma imagem.")
-        return False
 
 @app.route('/', methods=["GET", "POST"])
 def home():
@@ -35,60 +35,38 @@ def home():
         if 'user_id' not in session:
             session['user_id'] = str(uuid.uuid4())
         user_id = session['user_id']
-        try:
-            upload_folder = os.path.join(os.getcwd(), 'static', 'uploads', user_id)
-            os.makedirs(upload_folder, exist_ok=True)
-        except: print("Erro ao criar diretório")
-        # Check if an image file is uploaded
-        url = request.form.get('link')
-        imagem = request.files['imagem']
-        if not imagem and not url:
-            return "Nenhuma imagem foi provida", 400
-        if imagem and imagem.filename == '':
-            return "Nenhum arquivo selecionado", 400
-        elif imagem:
-            filename = secure_filename(imagem.filename)
-            print(1)
-        else:
-            download = Download()
-            res = download.baixar(url)
-            if res == False: return "URL não é válida"
-            imagem = res
-            filename = imagem.filename
-        ext = imagem.filename.split('.')[-1]
-        if ext != 'jpeg' and ext != 'png':
-            return f"Formato inválido (.{ext}). Por favor, envie arquivos '.jpeg' ou '.png'" 
+        submit_type = request.form.get("submit_type")
+        # Cria o diretório onde a imagem será salva
+        upload_folder = f'static/uploads/{user_id}'
+        os.makedirs(upload_folder, exist_ok=True)
+    
+        if submit_type == "file":
+            uploaded_file = request.files['imagem']
+
+            if not uploaded_file:
+                return render_template('index.html', error_message="Nenhuma Arquivo foi provido")
+
+            if uploaded_file and uploaded_file.filename == '':
+                return render_template('index.html', error_message="Arquivo não selecionado")
+            imagem,filename = file_sended(uploaded_file=uploaded_file, upload_folder=upload_folder)
+
+        elif submit_type == "url":
+            try:
+                url = request.form.get('link')  # Obtenha a URL ou arquivo enviado
+                imagem,filename = url_sended(url=url)
+            except Exception:
+                return render_template('index.html', error_message="URL inválida")    
         opcao = request.form['opcao']
-        print(filename)
-        #byte = imagem.read()
-        #imagem = Image.open(io.BytesIO(byte)) 
-        byte = imagem.read() if imagem else open(filename, 'rb').read()
-        imagem = Image.open(io.BytesIO(byte))
-        if opcao == 'escala':
-            imagem = EscalaCinza.aplicar(imagem=imagem)
-        elif opcao == 'pretobranco':
-            imagem = PretoBranco.aplicar(imagem=imagem)
-        elif opcao == 'cartoon':
-            imagem = Cartoon.aplicar(imagem=imagem)
-        elif opcao == 'negativa':
-            imagem = FotoNegativa.aplicar(imagem=imagem)
-        elif opcao == 'contorno':
-            imagem = Contorno.aplicar(imagem=imagem)
-        else:
-            imagem = Blurred.aplicar(imagem=imagem) 
-        image_path = os.path.join(upload_folder, "Imagem_" + opcao + "." + ext)
-        #print(image_path)
-        imagem.save(image_path)
-        path = os.path.join('uploads', user_id, 'Imagem_' + opcao + '.' + ext)
-        print(path)
- 
-        # Save the uploaded file
-        #file_path = os.path.join(app.config['UPLOAD_FOLDER'], imagem.filename)
-        #imagem.save(file_path)
-        # Pass the file path to the template
-        return render_template("imagem.html", imagem=path)
+        imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
+        image_path = os.path.join(upload_folder, filename)
+        imagem_processada.save(image_path)
+        
+        # Passa o caminho da imagem para o template
+        return render_template("imagem.html", imagem=image_path)
+    
     return render_template('index.html')
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
+
