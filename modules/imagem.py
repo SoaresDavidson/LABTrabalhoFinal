@@ -7,7 +7,7 @@ class Imagem:
         else:
             self.__img = img
             
-    def mostarImagem(self):
+    def mostrarImagem(self):
         self.__img.show()
     
     def retornaImagem(self):
