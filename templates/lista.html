@@ -1,21 +1,18 @@
 {% extends "layout.html" %}
 {% block body %}
-<form action="/download" method="post" id="download-form">
-<div align-items="center">
+<form action="/download" method="post" id="download-form" style="display: flex; flex-wrap: wrap; justify-content: center;">
     {% for imagem in imagens %}
     <label>
         <input type="checkbox" name="imagens" value="{{ imagem }}">
-        <img src="{{ url_for('static', filename='uploads/' ~ session['user_id'] ~ '/' ~ imagem) }}" alt="{{ imagem }}" width="100px" height="100px" object-fit="contain">
+        <img src="{{ url_for('static', filename='uploads/' ~ session['user_id'] ~ '/' ~ imagem) }}" alt="{{ imagem }}" class="img_form">
         {{ imagem }}
     </label><br>
     {% endfor %}
         <button type="submit">Baixar imagens selecionadas</button>
 </form>
-    
-    <form action="/" method="get" class="Return">
-        <button type="submit">Voltar</button>
-    </form>
-</div>
+<form action="/" method="get" class="Return">
+    <button type="submit">Voltar</button>
+</form>
 {% endblock %}
 <script>
     document.getElementById('download-form').addEventListener('submit', function(event) {
