@@ -44,10 +44,10 @@ def home():
             uploaded_file = request.files['imagem']
 
             if not uploaded_file:
-                return render_template('error.html', mensagem="Nenhuma Arquivo foi provido")
+                return render_template('index.html', error_message="Nenhuma Arquivo foi provido")
 
             if uploaded_file and uploaded_file.filename == '':
-                return render_template('error.html', mensagem="Arquivo não selecionado")
+                return render_template('index.html', error_message="Arquivo não selecionado")
             imagem,filename = file_sended(uploaded_file=uploaded_file, upload_folder=upload_folder)
 
         elif submit_type == "url":
@@ -55,7 +55,7 @@ def home():
                 url = request.form.get('link')  # Obtenha a URL ou arquivo enviado
                 imagem,filename = url_sended(url=url)
             except Exception:
-                return render_template('error.html', mensagem="URL inválida")    
+                return render_template('index.html', error_message="URL inválida")    
         opcao = request.form['opcao']
         imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
         image_path = os.path.join(upload_folder, filename)

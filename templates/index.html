@@ -1,5 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
+    {% if error_message %}
+    <div class="mensagem_erro">
+        {{ error_message }}
+    </div>
+    
+    {% endif %}
     <form action ="/" method="post" enctype="multipart/form-data">
         <button type="submit" name="submit_type" value="file">Send File</button>
         <input type="file" id="fileInput" name="imagem">
