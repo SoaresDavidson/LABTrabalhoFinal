@@ -17,12 +17,12 @@ def file_sended(uploaded_file, upload_folder:str):
         filename = secure_filename(uploaded_file.filename)
         file_path = os.path.join(upload_folder, filename)
         uploaded_file.save(file_path)  # Save the uploaded file
-        imagem = Image.open(file_path) # Abrindo a imagem enviada diretamente pelo formulário
+        imagem = Imagem(file_path) # Abrindo a imagem enviada diretamente pelo formulário
         return imagem, filename
 
 def url_sended(url):
     download = Download()
-    imagem = download.baixar(url)  # Baixando e abrindo a imagem
+    imagem = Imagem(download.baixar(url))  # Baixando e abrindo a imagem
     if imagem == False: 
         return render_template('error.html', mensagem="URL inválida")
     filename = os.path.basename(url)

@@ -15,7 +15,7 @@ class Download:
                 return img
                 # img.show()  # Exibe a imagem (opcional)
                 # img.save('imagemBaixada.jpg')  # Salva a imagem
-                print("Imagem baixada com sucesso!")
+                #print("Imagem baixada com sucesso!")
             elif resposta.status_code == 404:
                 print("O link fornecido não foi encontrado e o download não foi realizado.")
             elif resposta.status_code == 403:
