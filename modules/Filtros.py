@@ -19,8 +19,7 @@ class PretoBranco(Filtro):
 class Cartoon(Filtro):
     @staticmethod
     def aplicar(imagem):
-        imagemCinza = imagem.convert("L")
-        imagemSuavizada = imagemCinza.filter(ImageFilter.SMOOTH_MORE)
+        imagemSuavizada = imagem.filter(ImageFilter.SMOOTH_MORE)
         bordas = imagem.filter(ImageFilter.FIND_EDGES)
         imagemCartoon = Image.blend(imagemSuavizada.convert("RGB"), bordas.convert("RGB"), alpha=0.3) 
         imagemCartoon = ImageEnhance.Contrast(imagemCartoon).enhance(1.5)  
