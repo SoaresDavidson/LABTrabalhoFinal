@@ -3,12 +3,14 @@ from modules.Filtros import EscalaCinza,PretoBranco,Cartoon,Contorno,Blurred,Fot
 from modules.imagem import Imagem
 from modules.download import Download
 import connection
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_file
 from werkzeug.utils import secure_filename
 import requests
 import uuid
 import os
+import zipfile
 import io  # Para trabalhar com fluxos de bytes
+from io import BytesIO
 
 def file_sended(uploaded_file, upload_folder:str):
         filename = secure_filename(uploaded_file.filename)
@@ -81,11 +83,39 @@ def listar():
         imagens.append(imagem)
     return render_template("lista.html", imagens=imagens)
 
-@app.route('/download', methods=["GET"])
+@app.route('/download', methods=["POST"])
 def download():
     if 'user_id' not in session:
-            session['user_id'] = str(uuid.uuid4())
+        session['user_id'] = str(uuid.uuid4())
+    
     user_id = session['user_id']
+    
+    # O método get_json é utilizado para obter os dados JSON do corpo da requisição
+    dados = request.get_json()  # Certificando que o Flask interpreta os dados como JSON
+    selecionadas = dados.get('imagens', [])  # Coletando a lista de imagens selecionadas
+    
+    # Caminho do diretório onde as imagens estão armazenadas
+    upload_folder = f'static/uploads/{user_id}'
+    os.makedirs(upload_folder, exist_ok=True)
+
+    if not selecionadas:
+        return "Error: Nenhuma imagem selecionada", 400
+    
+    # Criação do arquivo zip em memória
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for imagem in selecionadas:
+            imagem_path = os.path.join(upload_folder, imagem)
+            if os.path.exists(imagem_path):
+                zipf.write(imagem_path, arcname=imagem)
+            else:
+                print(f"Imagem não encontrada: {imagem}")
+    
+    # Fazendo o buffer voltar ao início para ser lido e enviado
+    zip_buffer.seek(0)
+    
+    # Retorna o arquivo zip para o navegador
+    return send_file(zip_buffer, as_attachment=True, download_name="imagens.zip", mimetype="application/zip")
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

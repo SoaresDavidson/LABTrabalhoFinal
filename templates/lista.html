@@ -1,20 +1,62 @@
 {% extends "layout.html" %}
 {% block body %}
+<form action="/download" method="post" id="download-form">
 <div align-items="center">
     {% for imagem in imagens %}
     <label>
-        <input type="checkbox" name="images" value="{{ imagem }}">
+        <input type="checkbox" name="imagens" value="{{ imagem }}">
         <img src="{{ url_for('static', filename='uploads/' ~ session['user_id'] ~ '/' ~ imagem) }}" alt="{{ imagem }}" width="100px" height="100px" object-fit="contain">
         {{ imagem }}
     </label><br>
     {% endfor %}
-    
-    <form action="/download" method="post">
         <button type="submit">Baixar imagens selecionadas</button>
-    </form>
+</form>
     
     <form action="/" method="get" class="Return">
         <button type="submit">Voltar</button>
     </form>
 </div>
 {% endblock %}
+<script>
+    document.getElementById('download-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita o envio padrão do formulário
+        
+        // Coleta as imagens selecionadas
+        const selecionadas = Array.from(document.querySelectorAll('input[name="imagens"]:checked'))
+                                   .map(input => input.value);
+        
+        if (selecionadas.length === 0) {
+            alert("Nenhuma imagem selecionada!");
+            return;
+        }
+
+        // Envia as imagens selecionadas via POST usando fetch
+        fetch('/download', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Certificando-se de que o cabeçalho Content-Type está correto
+            },
+            body: JSON.stringify({ imagens: selecionadas }) // Corpo como JSON
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.blob();
+            } else {
+                throw new Error("Erro ao fazer o download");
+            }
+        })
+        .then(blob => {
+            // Cria um link temporário para baixar o arquivo zip
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'imagens.zip';
+            a.click();
+            URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+            console.error('Erro ao baixar o arquivo:', error);
+        });
+    });
+</script>
+
