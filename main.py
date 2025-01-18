@@ -66,6 +66,27 @@ def home():
     
     return render_template('index.html')
 
+
+@app.route('/listar', methods=["GET"])
+def listar():
+    if 'user_id' not in session:
+            session['user_id'] = str(uuid.uuid4())
+    user_id = session['user_id']
+        # Cria o diretório onde a imagem será salva
+    upload_folder = f'static/uploads/{user_id}'
+    os.makedirs(upload_folder, exist_ok=True)
+    diretorio = os.listdir(upload_folder)
+    imagens = []
+    for imagem in diretorio:
+        imagens.append(imagem)
+    return render_template("lista.html", imagens=imagens)
+
+@app.route('/download', methods=["GET"])
+def download():
+    if 'user_id' not in session:
+            session['user_id'] = str(uuid.uuid4())
+    user_id = session['user_id']
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
 
