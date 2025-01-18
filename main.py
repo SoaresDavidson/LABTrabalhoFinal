@@ -34,6 +34,7 @@ app.secret_key = 'vitinhoseulindo'
 
 @app.route('/', methods=["GET", "POST"])
 def home():
+    placeholder = ""
     if request.method == "POST":
         if 'user_id' not in session:
             session['user_id'] = str(uuid.uuid4())
@@ -63,11 +64,18 @@ def home():
         imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
         image_path = os.path.join(upload_folder, filename)
         imagem_processada.save(image_path)
-        
+        placeholder =  f"""<div align-items="center">
+            <img src={image_path} alt="imagem">
+            <h3 class="Return">Aqui está sua imagem!</h3>
+            <form action="/" method="get" class="Return">
+                <button type="Submit" >Voltar</button>
+            </form>
+            </div>
+        """
         # Passa o caminho da imagem para o template
-        return render_template("imagem.html", imagem=image_path)
+        #return render_template("imagem.html", imagem=image_path)
     
-    return render_template('index.html')
+    return render_template('index.html',placeholder=placeholder)
 
 
 @app.route('/listar', methods=["GET"])
