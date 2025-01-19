@@ -40,7 +40,7 @@ def diretorio_unico(id_usuario) -> str:
 app = Flask(__name__)
 
 app.secret_key = 'vitinhoseulindo'
-""""""
+
 @app.route('/', methods=["GET", "POST"])
 def home():
     placeholder = ""
@@ -80,13 +80,7 @@ def home():
 
 @app.route('/listar', methods=["GET","POST"])
 def listar():
-    # if 'user_id' not in session:
-    #         session['user_id'] = str(uuid.uuid4())
-    # user_id = session['user_id']
     user_id = iniciar_sessão(seccao=session)
-        # Cria o diretório onde a imagem será salva
-    # upload_folder = f'static/uploads/{user_id}'
-    # os.makedirs(upload_folder, exist_ok=True)
     upload_folder = diretorio_unico(id_usuario=user_id)
     diretorio = os.listdir(upload_folder)
     imagens = []
@@ -105,7 +99,7 @@ def escolha():
 @app.route('/salvar', methods=["GET", "POST"])
 def salvar():
     # Verifica se o botão foi pressionado
-    button = request.form.get('save_button')
+    button = request.form.get('discard_save_button')
     imagem = request.form.get('imagem')
     arquivo = os.path.basename(imagem)
     #return render_template('error.html', mensagem="URL inválida")
@@ -122,21 +116,23 @@ def salvar():
     
     upload_folder = f'static/uploads/{user_id}'
         
-    if button == "save":
-        # Itera sobre as opções e remove as imagens que não são do tipo selecionado
-        for opcao in ['',"escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
-            imagem_path = upload_folder + "/" + opcao + "-" + imagem_name
-            if opcao=='':
-                imagem_path = upload_folder + "/" + imagem_name
-            print(f"{tipo} e {opcao}")
-            if tipo == opcao:
-                continue
-            os.remove(imagem_path)
+    # if button == "save":
+    # Itera sobre as opções e remove as imagens que não são do tipo selecionado
+    for opcao in ['',"escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
+        imagem_path = upload_folder + "/" + opcao + "-" + imagem_name
+        if opcao=='':
+            imagem_path = upload_folder + "/" + imagem_name
+        print(f"{tipo} e {opcao}")
+        if tipo == opcao and button == "save":
+            continue
+        if opcao == '' and button == "descartar":
+            imagem_path = upload_folder + "/" + imagem_name
+        os.remove(imagem_path)
     return render_template('index.html')        
      
 @app.route('/deletar', methods=["GET", "POST"])
 def deletar():
-    button = request.form.get('discard_button')
+    button = request.form.get('discard_save_button')
     imagem = request.form.get('imagem')
     arquivo = os.path.basename(imagem)
     #return render_template('error.html', mensagem="URL inválida")
