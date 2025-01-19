@@ -151,3 +151,15 @@ img {
     padding: 3rem;
     border-radius: 5px;
 }
+.selecao {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 auto;
+}
+
+.voltar {
+    background-color: #c74040;
+}
