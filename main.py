@@ -102,10 +102,6 @@ def home():
             
             
                 
-                
-                    
-                  
-            
         for opcao in ["escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
             imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
             image_path = os.path.join(upload_folder, f'{opcao}-{filename}')
