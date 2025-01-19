@@ -60,25 +60,18 @@ def home():
                 imagem,filename = url_sended(url=url)
             except Exception:
                 return render_template('index.html', error_message="URL inválida")    
-        opcao = request.form['opcao']
-        imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
-        image_path = os.path.join(upload_folder, filename)
-        imagem_processada.save(image_path)
-        placeholder =  f"""<div align-items="center">
-            <img src={image_path} alt="imagem">
-            <h3 class="Return">Aqui está sua imagem!</h3>
-            <form action="/" method="get" class="Return">
-                <button type="Submit" >Voltar</button>
-            </form>
-            </div>
-        """
+        for opcao in ["escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
+            imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
+            image_path = os.path.join(upload_folder, f'{opcao}-{filename}')
+            imagem_processada.save(image_path)
+
         # Passa o caminho da imagem para o template
-        #return render_template("imagem.html", imagem=image_path)
+        return render_template("imagem.html", imagem=image_path)
     
     return render_template('index.html',placeholder=placeholder)
 
 
-@app.route('/listar', methods=["GET"])
+@app.route('/listar', methods=["GET","POST"])
 def listar():
     if 'user_id' not in session:
             session['user_id'] = str(uuid.uuid4())
@@ -94,6 +87,75 @@ def listar():
         return render_template("diretoriovazio.html")
     return render_template("lista.html", imagens=imagens)
 
+@app.route('/escolha', methods=["POST"])
+def escolha():
+    imagem = request.form.get('imagem')
+    imagem_name = imagem.split('-')[0]  # Extract only the image name
+    return render_template("imagem.html", imagem=imagem_name)  # Pass the image name to the template
+
+@app.route('/salvar', methods=["GET", "POST"])
+def salvar():
+    # Verifica se o botão foi pressionado
+    button = request.form.get('save_button')
+    button_2 = request.form.get('discard_button')
+    imagem = request.form.get('imagem')
+    arquivo = os.path.basename(imagem)
+    #return render_template('error.html', mensagem="URL inválida")
+    if imagem is None:
+        return "Imagem não foi enviada", 400  # Retorna erro se imagem não foi fornecida
+    
+    print(arquivo)
+    tipo, imagem_name = arquivo.split('-', 1)
+    print(imagem_name)
+
+    user_id = session.get("user_id")  # Certifique-se de que session["user_id"] existe
+    if not user_id:
+        return "Usuário não autenticado", 403  # Se o usuário não estiver logado
+    
+    upload_folder = f'static/uploads/{user_id}'
+        
+    if button == "save":
+        # Itera sobre as opções e remove as imagens que não são do tipo selecionado
+        for opcao in ['',"escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
+            imagem_path = upload_folder + "/" + opcao + "-" + imagem_name
+            if opcao=='':
+                imagem_path = upload_folder + "/" + imagem_name
+            print(f"{tipo} e {opcao}")
+            if tipo == opcao:
+                continue
+            os.remove(imagem_path)
+    return render_template('index.html')        
+     
+@app.route('/deletar', methods=["GET", "POST"])
+def deletar():
+    button = request.form.get('discard_button')
+    imagem = request.form.get('imagem')
+    arquivo = os.path.basename(imagem)
+    #return render_template('error.html', mensagem="URL inválida")
+    if imagem is None:
+        return "Imagem não foi enviada", 400  # Retorna erro se imagem não foi fornecida
+    
+    print(arquivo)
+    tipo, imagem_name = arquivo.split('-', 1)
+    print(imagem_name)
+
+    user_id = session.get("user_id")  # Certifique-se de que session["user_id"] existe
+    if not user_id:
+        return "Usuário não autenticado", 403  # Se o usuário não estiver logado
+    
+    upload_folder = f'static/uploads/{user_id}'
+        
+    if button == "descartar":
+        # Itera sobre as opções e remove as imagens que não são do tipo selecionado
+        for opcao in ['',"escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
+            imagem_path = upload_folder + "/" + opcao + "-" + imagem_name
+            if opcao=='':
+                imagem_path = upload_folder + "/" + imagem_name
+            print(f"{tipo} e {opcao}")
+            os.remove(imagem_path)
+    return render_template('index.html')         
+
+      
 @app.route('/download', methods=["POST"])
 def download():
     if 'user_id' not in session:
@@ -126,5 +188,3 @@ def download():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-

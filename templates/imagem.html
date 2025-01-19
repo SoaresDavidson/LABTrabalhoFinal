@@ -1,10 +1,59 @@
 {% extends "layout.html" %}
 {% block body %}
-<div align-items="center">
-<img src={{imagem}} alt="imagem">
-<h3 class="Return">Aqui está sua imagem!</h3>
-<form action="/" method="get" class="Return">
-    <button type="Submit" >Voltar</button>
+<div align-items="center" class="selecao">
+  <form action="/salvar" method="get">
+      <img src={{ imagem }} alt="imagem" id="imagem">
+  </form>
+  
+  <h3 class="Return">Aqui está sua imagem!</h3>
+  <form action="/escolha" method="post" enctype="multipart/form-data">
+    
+    <select name="opcao" id="opcao" onchange="aplicarFiltro()">
+        <option value="escala" id="escala">Escala Cinza</option>
+        <option value="pretoBranco" id="pretoBranco">Preto e Branco</option>
+        <option value="cartoon" id="cartoon">Cartoon</option>
+        <option value="negativa" id="negativa">Escala Negativa</option>
+        <option value="contorno" id="contorno">Contorno</option>
+        <option value="blurred" id="blurred">Blurred</option>
+    </select>
+  </form>    
+
+  <form action="/salvar" method="POST" class="Return">
+    <input type="hidden" name="imagem" value="{{ imagem }}" id="imagem_hidden">
+    <button type="submit" name="save_button" value="save">Salvar Imagem</button>
+    
+</form>
+
+<form action="/deletar" method="POST" class="Return">
+  <input type="hidden" name="imagem" value="{{ imagem }}" id="imagem_hidden">
+  <button type="submit" name="discard_button" value="descartar" class="voltar">Descartar Imagem</button>
 </form>
 </div>
+<script>
+    function aplicarFiltro() {
+        // Obtém o valor selecionado no <select>
+        const filtroSelecionado = document.getElementById('opcao').value;
+
+        const img = document.getElementById('imagem');
+        var caminho_img = img.src;
+        const diretorio_img = caminho_img.substring(0, caminho_img.lastIndexOf('/'));
+        var nome_img = caminho_img.substring(caminho_img.lastIndexOf('/') + 1);
+        var partes = nome_img.split('-');
+        var parteFinal = partes.slice(1).join('-');
+       
+        // Mapeia os filtros para as imagens correspondentes
+        const filtroParaImagem = {
+            escala: 'escala-' + parteFinal,
+            pretoBranco: 'pretoBranco-' + parteFinal,
+            cartoon: 'cartoon-' + parteFinal,
+            negativa: 'negativa-' + parteFinal,
+            contorno: 'contorno-' + parteFinal,
+            blurred: 'blurred-' + parteFinal
+        };
+
+        // Atualiza o atributo 'src' com base no filtro selecionado
+        img.src = diretorio_img + '/' + (filtroParaImagem[filtroSelecionado] || 'imagem_padrao.jpg');
+        document.getElementById('imagem_hidden').value = filtroParaImagem[filtroSelecionado];
+    }
+</script>
 {% endblock %}

@@ -29,16 +29,19 @@ class Cartoon(Filtro):
 class FotoNegativa(Filtro):
     @staticmethod
     def aplicar(imagem):
+        imagem = imagem.convert("RGB")  
         return ImageOps.invert(imagem)
 
 class Contorno(Filtro):
     @staticmethod
     def aplicar(imagem):
+        imagem = imagem.convert("RGB")
         return imagem.filter(ImageFilter.CONTOUR)
 
 class Blurred(Filtro):
     @staticmethod
     def aplicar(imagem):
+        imagem = imagem.convert("RGB")
         return imagem.filter(ImageFilter.BLUR)
 
 # Usar from PIL import Image
