@@ -1,5 +1,4 @@
 from PIL import Image
-
 class Imagem:
     def __init__(self, img):
         if isinstance(img,str):
@@ -24,5 +23,5 @@ class Imagem:
 
 if __name__ == "__main__":
     p = Imagem("/home/davi/Imagens/Wallpapers/mistborn.jpeg")
-    p.show()
+    p.salvarImagem("imagemd.jpeg","uploads/")
 
