@@ -1,0 +1,1 @@
+return render_template('index.html', error_message="O arquivo não é uma imagem")

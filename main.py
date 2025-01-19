@@ -1,6 +1,8 @@
 from modules.imagem import Imagem
 from modules.download import Download
 import connection
+import requests
+from PIL import Image
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
 from werkzeug.utils import secure_filename
 import uuid
@@ -13,14 +15,26 @@ def file_sended(uploaded_file, upload_folder:str):
         filename = secure_filename(uploaded_file.filename)
         file_path = os.path.join(upload_folder, filename)
         uploaded_file.save(file_path)
-        imagem = Imagem(file_path) # Abrindo a imagem enviada diretamente pelo formulário
+        ext = ['.jpg', '.png', '.png', '.gif', '.bmp', '.heic', '.webp']
+        if not any(filename.lower().endswith(i) for i in ext):
+            raise ValueError
+        try:
+            imagem = Imagem(file_path) # Abrindo a imagem enviada diretamente pelo formulário
+            
+        except (IOError, SyntaxError): # A partir disto, é possível levantar exceções caso o arquivo não seja uma imagem, como na linha 72
+            os.remove(file_path)
+            raise ValueError
+            
+        
         return imagem, filename
+        
+            
 
 def url_sended(url, upload_folder:str):
     download = Download()
     imagem = Imagem(download.baixar(url))
-    if imagem == False: 
-        return render_template('error.html', mensagem="URL inválida")
+    
+    
     
     filename = os.path.basename(url)
     imagem.salvarImagem(nome=filename,caminho=upload_folder+"/")
@@ -51,21 +65,43 @@ def home():
         submit_type = request.form.get("submit_type")
         if submit_type == "file":
             uploaded_file = request.files['imagem']
-
+            
             if not uploaded_file:
                 return render_template('index.html', error_message="Nenhuma Arquivo foi provido")
 
             if uploaded_file and uploaded_file.filename == '':
                 return render_template('index.html', error_message="Arquivo não selecionado")
             
-            imagem,filename = file_sended(uploaded_file=uploaded_file, upload_folder=upload_folder)
+            try:
+                imagem,filename = file_sended(uploaded_file=uploaded_file, upload_folder=upload_folder)
+            except Exception:
+                return render_template('index.html', error_message="Arquivo não é uma imagem ou não possui extensão suportada")
+            
+            
+                
+            
+            
 
         elif submit_type == "url":
             try:
                 url = request.form.get('link')  # Obtenha a URL ou arquivo enviado
                 imagem,filename = url_sended(url=url,upload_folder=upload_folder)
-            except Exception:
-                return render_template('index.html', error_message="URL inválida")    
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 404:
+                    return render_template('index.html', error_message="URL não encontrada")
+                elif e.response.status_code == 403:
+                    return render_template('index.html', error_message="URL de acesso proibido")
+            except requests.exceptions.MissingSchema:
+                return render_template('index.html', error_message="URL inválida")
+            except AttributeError:
+                return render_template('index.html', error_message="Ocorreu um erro de Atributte, verifique a URL")
+            
+            
+            
+                
+                
+                    
+                  
             
         for opcao in ["escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
             imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
