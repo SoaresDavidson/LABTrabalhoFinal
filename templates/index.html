@@ -7,12 +7,12 @@
     
     {% endif %}
     <form action ="/" method="post" enctype="multipart/form-data">
-        <button type="submit" name="submit_type" value="file">Send File</button>
+        <button type="submit" name="submit_type" value="file">Enviar Arquivo</button>
         <input type="file" id="fileInput" name="imagem">
         <p id="fileName"></p>
         <br>
         <br>
-        <button type="submit" name="submit_type" value="url">Send URL</button>
+        <button type="submit" name="submit_type" value="url">Enviar URL</button>
         <input type="text" id="url" name="link" placeholder="Enter URL">
         <h2>Escolha uma opção de filtro para aplicar</h2>
         <label for="opcao">Filtro:</label>
@@ -28,7 +28,7 @@
     <form action="/listar" method="get">
         <button type="Submit" name="listar">Listar diretório</button>
     </form>
-    {{placeholder|safe}}
+   <div class="container">{{ placeholder|safe }}</div>
     
   
 {% endblock %}

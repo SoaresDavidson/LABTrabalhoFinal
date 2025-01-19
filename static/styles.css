@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     height: 100vh;
     display: flex;
@@ -10,6 +16,7 @@ body {
     font-family: "Cabin", sans-serif;
     font-weight: 400;
     color: #ecf0f1; 
+    gap: 1rem;
     margin: 0;
 }
 
@@ -85,7 +92,7 @@ br {
 }
 img {
     max-width: 100%;  /* A largura máxima será 100% do seu contêiner */
-    max-height: 500px; /* A altura máxima será 500px */
+    max-height: 300px; /* A altura máxima será 500px */
     width: auto;
     height: auto;
     margin: 0 auto;
@@ -136,4 +143,11 @@ img {
 .img_form {
     max-width: 100px;  
     max-height: 100px; 
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 3rem;
+    border-radius: 5px;
 }
