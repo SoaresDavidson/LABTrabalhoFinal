@@ -31,7 +31,7 @@ def url_sended(url):
 app = Flask(__name__)
 
 app.secret_key = 'vitinhoseulindo'
-
+""""""
 @app.route('/', methods=["GET", "POST"])
 def home():
     placeholder = ""
