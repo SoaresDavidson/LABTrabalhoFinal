@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 * {
     box-sizing: border-box;
     margin: 0;
@@ -11,17 +11,41 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #2c3e50; 
+    width: auto;
+    background-color: #2c3e50;  /* Cor do fundo */
     flex-direction: column;
     font-family: "Cabin", sans-serif;
     font-weight: 400;
-    color: #ecf0f1; 
+    color: #ecf0f1;  /* Cor do texto */
     gap: 1rem;
     margin: 0;
 }
 
+.titulo {
+    top: 1rem;
+    padding: 5rem;
+    font-size: 3rem; /* Tamanho maior */
+    font-weight: 700;
+    font-family: 'Bangers', sans-serif;
+    text-align: center;
+    margin-bottom: 1rem;
+    background-image: url('img/quadrinhos-abstrato-azul_225004-669.avif'); /* Gradiente e imagem de fundo */
+    background-size: cover; /* Faz a imagem cobrir todo o elemento */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Não repete a imagem */
+    width: auto; 
+    height: auto; 
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border: 2px solid #fff; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    transform: rotate(-2deg);
+    display: inline-block;
+    color: #fff308;  /* Cor do texto */
+}
+
 form {
-    background-color: #34495e;
+    background-color: #34495e;  /* Cor de fundo do formulário */
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -30,13 +54,13 @@ form {
 }
 
 h2 {
-    color: #ecf0f1; 
+    color: #ecf0f1;  /* Cor do título */
     margin-bottom: 20px;
 }
 
 button {
     cursor: pointer;
-    background-color: #2980b9;
+    background-color: #3498db;  /* Azul suave */
     color: white;
     border-radius: 5px;
     padding: 10px 20px;
@@ -47,7 +71,7 @@ button {
 }
 
 button:hover {
-    background-color: #1f618d; 
+    background-color: #2980b9;  /* Azul mais escuro */
     transform: translateY(-2px);
 }
 
@@ -55,23 +79,23 @@ input[type="file"], input[type="text"], select {
     padding: 10px;
     width: 100%;
     border-radius: 5px;
-    background-color: #34495e; 
-    color: #ecf0f1; 
-    border: 1px solid #7f8c8d; 
+    background-color: #34495e;  /* Cor de fundo dos campos */
+    color: #ecf0f1;  /* Cor do texto nos campos */
+    border: 1px solid #7f8c8d;  /* Cor da borda */
     margin: 10px 0;
 }
 
 input[type="file"]:hover, input[type="text"]:hover, select:hover {
-    border-color: #2980b9; 
+    border-color: #2980b9;  /* Azul suave ao passar o mouse */
 }
 
 input[type="text"]:focus, select:focus {
-    border-color: #2980b9; 
+    border-color: #2980b9;  /* Azul suave ao focar */
     outline: none;
 }
 
 #fileName {
-    color: #f39c12;
+    color: #f39c12;  /* Cor amarela para o nome do arquivo */
     margin-top: 10px;
 }
 
@@ -80,7 +104,7 @@ select {
 }
 
 label {
-    color: #ecf0f1; 
+    color: #ecf0f1;  /* Cor do label */
     font-size: 16px;
     display: block;
     margin-bottom: 10px;
@@ -90,6 +114,7 @@ br {
     display: block;
     margin-bottom: 10px;
 }
+
 img {
     max-width: 100%;  /* A largura máxima será 100% do seu contêiner */
     max-height: 300px; /* A altura máxima será 500px */
@@ -98,51 +123,52 @@ img {
     margin: 0 auto;
     display: block;
 }
+
 .comeback {
     text-align: center;
     margin: 0 auto;
     text-decoration: none;
-    color:#2980b9;
+    color: #2980b9;  /* Azul suave */
 }
+
 .comeback:link {
-   
     text-decoration: none;
     font-weight: bold;
 }
 
 .comeback:hover {
-    color: #106faf;
+    color: #106faf;  /* Azul mais escuro */
     text-decoration: underline;
 }
 
 .Return {
    text-align: center;
    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-
+   display: flex;
+   flex-direction: column;
+   gap: 2rem;
 }
 
 .mensagem_erro {
-    color: #a82a2a; 
-    background-color: #f8d7da; 
+    color: #a82a2a;  /* Cor de texto de erro */
+    background-color: #f8d7da;  /* Cor de fundo de erro */
     padding: 10px;
-    border: 1px solid #f5c6cb; 
+    border: 1px solid #f5c6cb;  /* Cor da borda de erro */
     border-radius: 5px;
     margin-bottom: 20px;
     font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Sombra suave */
     position: absolute; 
     top: -2px;
     margin: 0 auto;
     width: 50%;
     text-align: center;
+    z-index: 2;
 }
 
 .img_form {
-    max-width: 100px;  
-    max-height: 100px; 
+    max-width: 100px;  /* Largura máxima */
+    max-height: 100px;  /* Altura máxima */
 }
 
 .container {
@@ -151,6 +177,7 @@ img {
     padding: 3rem;
     border-radius: 5px;
 }
+
 .selecao {
     display: flex;
     flex-direction: column;
@@ -161,5 +188,5 @@ img {
 }
 
 .voltar {
-    background-color: #c74040;
+    background-color: #c74040;  /* Cor do botão de voltar */
 }
