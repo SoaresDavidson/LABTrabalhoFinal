@@ -1,6 +1,7 @@
 from modules.imagem import Imagem
 from modules.download import Download
 import connection
+from webImageHandling import file_sended,url_sended
 import requests
 from PIL import Image
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
@@ -11,51 +12,27 @@ import zipfile
 from io import BytesIO
 import shutil
 
-def file_sended(uploaded_file, upload_folder:str):
-        filename = secure_filename(uploaded_file.filename)
-        file_path = os.path.join(upload_folder, filename)
-        uploaded_file.save(file_path)
-        ext = ['.jpg', '.png', '.png', '.gif', '.bmp', '.heic', '.webp']
-        if not any(filename.lower().endswith(i) for i in ext): # verifica o final do nome dos arquivos de upload para ciencia da sua extensao
-            raise ValueError
-        try:
-            imagem = Imagem(file_path) # Abrindo a imagem enviada diretamente pelo formulário
-            
-        except (IOError, SyntaxError): # A partir disto, é possível levantar exceções caso o arquivo não seja uma imagem, como na linha 72
-            os.remove(file_path)
-            raise ValueError
-            
-        
-        return imagem, filename
-        
-            
-
-def url_sended(url, upload_folder:str):
-    download = Download()
-    try:
-        imagem = Imagem(download.baixar(url))
-    except Image.UnidentifiedImageError: # verifica se o image.open lança uma excecao do tipo imagem indefinida, e lança uma excecao de valor
-        raise ValueError
-    
-    filename = os.path.basename(url)
-    imagem.salvarImagem(nome=filename,caminho=upload_folder+"/")
-    return imagem, filename
-
-def iniciar_sessão(seccao):
+def iniciar_sessão(seccao): 
     if 'user_id' not in seccao:
             seccao['user_id'] = str(uuid.uuid4())
     user_id = seccao['user_id']
     return user_id
 
-def diretorio_unico(id_usuario) -> str:
+def diretorio_unico(id_usuario:str) -> str:
     upload_folder = f'static/uploads/{id_usuario}'
     os.makedirs(upload_folder, exist_ok=True)
     return upload_folder
 
+
+def listar_diretorio(path: str) -> list[str]:
+    if not os.path.exists(path):
+        return []
+    return os.listdir(path)
+
 app = Flask(__name__)
 
 app.secret_key = 'vitinhoseulindo'
-""""""
+
 @app.route('/', methods=["GET", "POST"])
 def home():
     placeholder = ""
@@ -115,19 +92,10 @@ def home():
 
 @app.route('/listar', methods=["GET","POST"])
 def listar():
-    # if 'user_id' not in session:
-    #         session['user_id'] = str(uuid.uuid4())
-    # user_id = session['user_id']
     user_id = iniciar_sessão(seccao=session)
-        # Cria o diretório onde a imagem será salva
-    # upload_folder = f'static/uploads/{user_id}'
-    # os.makedirs(upload_folder, exist_ok=True)
     upload_folder = diretorio_unico(id_usuario=user_id)
-    diretorio = os.listdir(upload_folder)
-    imagens = []
-    for imagem in diretorio:
-        imagens.append(imagem)
-    if len(imagens) == 0:
+    imagens = listar_diretorio(upload_folder)
+    if not imagens:
         return render_template("diretoriovazio.html")
     return render_template("lista.html", imagens=imagens)
 
@@ -140,7 +108,7 @@ def escolha():
 @app.route('/salvar', methods=["GET", "POST"])
 def salvar():
     # Verifica se o botão foi pressionado
-    button = request.form.get('save_button')
+    button = request.form.get('discard_save_button')
     imagem = request.form.get('imagem')
     arquivo = os.path.basename(imagem)
     #return render_template('error.html', mensagem="URL inválida")
@@ -157,58 +125,31 @@ def salvar():
     
     upload_folder = f'static/uploads/{user_id}'
         
-    if button == "save":
-        # Itera sobre as opções e remove as imagens que não são do tipo selecionado
-        for opcao in ['',"escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
-            imagem_path = upload_folder + "/" + opcao + "-" + imagem_name
-            if opcao=='':
-                imagem_path = upload_folder + "/" + imagem_name
-            print(f"{tipo} e {opcao}")
-            if tipo == opcao:
-                continue
-            os.remove(imagem_path)
-    return render_template('index.html')        
-     
-@app.route('/deletar', methods=["GET", "POST"])
-def deletar():
-    button = request.form.get('discard_button')
-    imagem = request.form.get('imagem')
-    arquivo = os.path.basename(imagem)
-    #return render_template('error.html', mensagem="URL inválida")
-    if imagem is None:
-        return "Imagem não foi enviada", 400  # Retorna erro se imagem não foi fornecida
-    
-    print(arquivo)
-    tipo, imagem_name = arquivo.split('-', 1)
-    print(imagem_name)
-
-    user_id = session.get("user_id")  # Certifique-se de que session["user_id"] existe
-    if not user_id:
-        return "Usuário não autenticado", 403  # Se o usuário não estiver logado
-    
-    upload_folder = f'static/uploads/{user_id}'
-        
-    if button == "descartar":
-        # Itera sobre as opções e remove as imagens que não são do tipo selecionado
-        for opcao in ['',"escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
-            imagem_path = upload_folder + "/" + opcao + "-" + imagem_name
-            if opcao=='':
-                imagem_path = upload_folder + "/" + imagem_name
-            print(f"{tipo} e {opcao}")
-            os.remove(imagem_path)
-    return render_template('index.html')         
+    # if button == "save":
+    # Itera sobre as opções e remove as imagens que não são do tipo selecionado
+    for opcao in ['',"escala", "pretoBranco", "cartoon", "negativa", "contorno", "blurred"]:
+        imagem_path = upload_folder + "/" + opcao + "-" + imagem_name
+        if opcao=='':
+            imagem_path = upload_folder + "/" + imagem_name
+        print(f"{tipo} e {opcao}")
+        if tipo == opcao and button == "save":
+            continue
+        if opcao == '' and button == "descartar":
+            imagem_path = upload_folder + "/" + imagem_name
+        os.remove(imagem_path)
+    return render_template('index.html')           
 
       
 @app.route('/download', methods=["POST"])
 def download():
     user_id = iniciar_sessão(seccao=session)
     upload_folder = diretorio_unico(user_id) # Caminho do diretório onde as imagens estão armazenadas
-    diretorio = os.listdir(upload_folder)
+    imagens = listar_diretorio(upload_folder)
     
     # Criação do arquivo zip em memória
     zip_buffer = BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for imagem in diretorio:
+        for imagem in imagens:
             imagem_path = os.path.join(upload_folder, imagem)
             if os.path.exists(imagem_path):
                 zipf.write(imagem_path, arcname=imagem)
