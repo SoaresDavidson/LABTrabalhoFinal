@@ -3,8 +3,33 @@
 <div align-items="center">
 <img src={{imagem}} alt="imagem">
 <h3 class="Return">Aqui está sua imagem!</h3>
-<form action="/" method="get" class="Return">
-    <button type="Submit" >Voltar</button>
+<form action="/" method="post" class="Return">
+    <select name="opcao" id="opcao" onchange="this.form.submit()">
+        <option value="escala">Escala Cinza</option>
+        <option value="pretoBranco">Preto e Branco</option>
+        <option value="cartoon">Cartoon</option>
+        <option value="negativa">Escala Negativa</option>
+        <option value="contorno">Contorno</option>
+        <option value="blurred">Blurred</option>
+    </select>
+    <button type="Submit">Voltar</button>
 </form>
 </div>
+<script>
+    function submitForm() {
+        var opcao = document.getElementById("opcao").value;
+        var formData = new FormData();
+        formData.append("opcao", opcao);
+
+        fetch("/", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            document.body.innerHTML = data; // Updates the body with the response
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
 {% endblock %}

@@ -35,15 +35,18 @@ app.secret_key = 'vitinhoseulindo'
 @app.route('/', methods=["GET", "POST"])
 def home():
     placeholder = ""
+    saved_image_path = session.get('saved_image_path', None)
     if request.method == "POST":
         if 'user_id' not in session:
             session['user_id'] = str(uuid.uuid4())
         user_id = session['user_id']
-        submit_type = request.form.get("submit_type")
+        
         # Cria o diretório onde a imagem será salva
         upload_folder = f'static/uploads/{user_id}'
         os.makedirs(upload_folder, exist_ok=True)
-    
+
+
+        submit_type = request.form.get("submit_type")
         if submit_type == "file":
             uploaded_file = request.files['imagem']
 
@@ -53,30 +56,32 @@ def home():
             if uploaded_file and uploaded_file.filename == '':
                 return render_template('index.html', error_message="Arquivo não selecionado")
             imagem,filename = file_sended(uploaded_file=uploaded_file, upload_folder=upload_folder)
+            saved_image_path = os.path.join(upload_folder, filename)
+            session['saved_image_path'] = saved_image_path
 
         elif submit_type == "url":
             try:
                 url = request.form.get('link')  # Obtenha a URL ou arquivo enviado
                 imagem,filename = url_sended(url=url)
+                saved_image_path = os.path.join(upload_folder, filename)
+                session['saved_image_path'] = saved_image_path
             except Exception:
-                return render_template('index.html', error_message="URL inválida")    
-        opcao = request.form['opcao']
-        imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
+                return render_template('index.html', error_message="URL inválida")
+        else:
+            if saved_image_path:
+                filename = "processada_"+os.path.basename(saved_image_path) 
+                opcao = request.form.get('opcao')
+                imagem = Imagem(saved_image_path)
+                imagem_processada = connection.aplicar_filtro(opcao=opcao, imagem=imagem)
+                caminho_imagem_processada = os.path.join(upload_folder, filename)
+                imagem_processada.save(caminho_imagem_processada)
+                return render_template("imagem.html",imagem=caminho_imagem_processada)
+        
         image_path = os.path.join(upload_folder, filename)
-        imagem_processada.save(image_path)
-        placeholder =  f"""<div align-items="center">
-            <img src={image_path} alt="imagem">
-            <h3 class="Return">Aqui está sua imagem!</h3>
-            <form action="/" method="get" class="Return">
-                <button type="Submit" >Voltar</button>
-            </form>
-            </div>
-        """
-        # Passa o caminho da imagem para o template
-        #return render_template("imagem.html", imagem=image_path)
+        session['image_path'] = image_path
+        return render_template("imagem.html", imagem=image_path)
     
     return render_template('index.html',placeholder=placeholder)
-
 
 @app.route('/listar', methods=["GET"])
 def listar():
