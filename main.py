@@ -16,7 +16,7 @@ def file_sended(uploaded_file, upload_folder:str):
         file_path = os.path.join(upload_folder, filename)
         uploaded_file.save(file_path)
         ext = ['.jpg', '.png', '.png', '.gif', '.bmp', '.heic', '.webp']
-        if not any(filename.lower().endswith(i) for i in ext):
+        if not any(filename.lower().endswith(i) for i in ext): # verifica o final do nome dos arquivos de upload para ciencia da sua extensao
             raise ValueError
         try:
             imagem = Imagem(file_path) # Abrindo a imagem enviada diretamente pelo formulário
@@ -32,9 +32,10 @@ def file_sended(uploaded_file, upload_folder:str):
 
 def url_sended(url, upload_folder:str):
     download = Download()
-    imagem = Imagem(download.baixar(url))
-    
-    
+    try:
+        imagem = Imagem(download.baixar(url))
+    except Image.UnidentifiedImageError: # verifica se o image.open lança uma excecao do tipo imagem indefinida, e lança uma excecao de valor
+        raise ValueError
     
     filename = os.path.basename(url)
     imagem.salvarImagem(nome=filename,caminho=upload_folder+"/")
@@ -85,7 +86,7 @@ def home():
         elif submit_type == "url":
             try:
                 url = request.form.get('link')  # Obtenha a URL ou arquivo enviado
-                imagem,filename = url_sended(url=url,upload_folder=upload_folder)
+                imagem,filename = url_sended(url=url,upload_folder=upload_folder) # aqui, a funcao que lança a excecao de valor é usada e funciona com seus excepts especificos
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == 404:
                     return render_template('index.html', error_message="URL não encontrada")
@@ -95,6 +96,8 @@ def home():
                 return render_template('index.html', error_message="URL inválida")
             except AttributeError:
                 return render_template('index.html', error_message="Ocorreu um erro de Atributte, verifique a URL")
+            except ValueError:
+                return render_template('index.html', error_message="Imagem indefinida ou protegida, verifique a URL")
             
             
             
