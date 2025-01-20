@@ -20,13 +20,13 @@
 
   <form action="/salvar" method="POST" class="Return">
     <input type="hidden" name="imagem" value="{{ imagem }}" id="imagem_hidden">
-    <button type="submit" name="save_button" value="save">Salvar Imagem</button>
+    <button type="submit" name="discard_save_button" value="save">Salvar Imagem</button>
     
 </form>
 
-<form action="/deletar" method="POST" class="Return">
+<form action="/salvar" method="POST" class="Return">
   <input type="hidden" name="imagem" value="{{ imagem }}" id="imagem_hidden">
-  <button type="submit" name="discard_button" value="descartar" class="voltar">Descartar Imagem</button>
+  <button type="submit" name="discard_save_button" value="descartar" class="voltar">Descartar Imagem</button>
 </form>
 </div>
 <script>
