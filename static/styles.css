@@ -154,14 +154,14 @@ img {
 }
 
 .mensagem_erro {
-    color: #a82a2a;  /* Cor de texto de erro */
-    background-color: #f8d7da;  /* Cor de fundo de erro */
+    color: #a82a2a;  
+    background-color: #f8d7da; 
     padding: 10px;
-    border: 1px solid #f5c6cb;  /* Cor da borda de erro */
+    border: 1px solid #f5c6cb; 
     border-radius: 5px;
     margin-bottom: 20px;
     font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Sombra suave */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
     position: absolute; 
     top: -2px;
     margin: 0 auto;
@@ -192,5 +192,43 @@ img {
 }
 
 .voltar {
-    background-color: #c74040;  /* Cor do botão de voltar */
+    background-color: #c74040;
 }
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px; 
+    }
+
+    .titulo {
+        font-size: 2.5rem;
+        padding: 1rem;
+    }
+
+    form {
+        width: 100%;
+        padding: 20px;
+    }
+
+    button {
+        padding: 12px 25px;
+        font-size: 16px; 
+    }
+
+    input[type="file"], input[type="text"], select {
+        font-size: 14px; 
+    }
+
+    img {
+        max-height: 200px;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .selecao {
+        gap: 1.5rem;
+    }
+}
+
