@@ -9,6 +9,7 @@
   <form action="/escolha" method="post" enctype="multipart/form-data">
     
     <select name="opcao" id="opcao" onchange="aplicarFiltro()">
+        <option value="normal" id="normal">Normal</option>
         <option value="escala" id="escala">Escala Cinza</option>
         <option value="pretoBranco" id="pretoBranco">Preto e Branco</option>
         <option value="cartoon" id="cartoon">Cartoon</option>
@@ -30,30 +31,45 @@
 </form>
 </div>
 <script>
-    function aplicarFiltro() {
-        // Obtém o valor selecionado no <select>
-        const filtroSelecionado = document.getElementById('opcao').value;
+function aplicarFiltro() {
+    // Obtém o valor selecionado no <select>
+    const filtroSelecionado = document.getElementById('opcao').value;
 
-        const img = document.getElementById('imagem');
-        var caminho_img = img.src;
-        const diretorio_img = caminho_img.substring(0, caminho_img.lastIndexOf('/'));
-        var nome_img = caminho_img.substring(caminho_img.lastIndexOf('/') + 1);
-        var partes = nome_img.split('-');
-        var parteFinal = partes.slice(1).join('-');
-       
-        // Mapeia os filtros para as imagens correspondentes
-        const filtroParaImagem = {
-            escala: 'escala-' + parteFinal,
-            pretoBranco: 'pretoBranco-' + parteFinal,
-            cartoon: 'cartoon-' + parteFinal,
-            negativa: 'negativa-' + parteFinal,
-            contorno: 'contorno-' + parteFinal,
-            blurred: 'blurred-' + parteFinal
-        };
+    const img = document.getElementById('imagem');
+    var caminho_img = img.src;
 
-        // Atualiza o atributo 'src' com base no filtro selecionado
-        img.src = diretorio_img + '/' + (filtroParaImagem[filtroSelecionado] || 'imagem_padrao.jpg');
-        document.getElementById('imagem_hidden').value = filtroParaImagem[filtroSelecionado];
+    // Extrai o diretório e o nome da imagem
+    const diretorio_img = caminho_img.substring(0, caminho_img.lastIndexOf('/'));
+    var nome_img = caminho_img.substring(caminho_img.lastIndexOf('/') + 1);
+
+    // Divide o nome da imagem com base no hífen (assumindo que o filtro é o primeiro termo)
+    var partes = nome_img.split('-');
+
+    // Se a imagem começar com um filtro (como 'blurred', 'escala', etc.), remove o prefixo
+    if (["blurred", "pretoBranco", "cartoon", "negativa", "contorno", "escala"].includes(partes[0])) {
+        partes.shift(); // Remove o primeiro item do array (que é o filtro)
     }
+
+    // Junta novamente o nome da imagem sem o prefixo
+    var nomeImagemPai = partes.join('-');
+
+    // Mapeia os filtros para as imagens correspondentes
+    const filtroParaImagem = {
+        normal: nomeImagemPai,  // "Normal" usa o nome original da imagem
+        escala: 'escala-' + nomeImagemPai,
+        pretoBranco: 'pretoBranco-' + nomeImagemPai,
+        cartoon: 'cartoon-' + nomeImagemPai,
+        negativa: 'negativa-' + nomeImagemPai,
+        contorno: 'contorno-' + nomeImagemPai,
+        blurred: 'blurred-' + nomeImagemPai
+    };
+
+    // Atualiza o atributo 'src' com base no filtro selecionado
+    img.src = diretorio_img + '/' + filtroParaImagem[filtroSelecionado];
+    document.getElementById('imagem_hidden').value = filtroParaImagem[filtroSelecionado];
+}
+
+
+
 </script>
 {% endblock %}

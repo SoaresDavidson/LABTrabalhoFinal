@@ -6,7 +6,7 @@ from modules.download import Download
 
 def file_sended(uploaded_file, upload_folder:str) -> tuple[Imagem,str]:
         filename = secure_filename(uploaded_file.filename)
-        file_path = os.path.join(upload_folder, filename)
+        file_path = os.path.join(upload_folder,filename)
         uploaded_file.save(file_path)
         ext = ['.jpg', '.png', '.png', '.gif', '.bmp', '.heic', '.webp', '.jpeg']
         if not any(filename.lower().endswith(i) for i in ext): # verifica o final do nome dos arquivos de upload para ciencia da sua extensao

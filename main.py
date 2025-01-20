@@ -83,9 +83,9 @@ def home():
             imagem_processada = connection.aplicar_filtro(opcao=opcao,imagem=imagem)
             image_path = os.path.join(upload_folder, f'{opcao}-{filename}')
             imagem_processada.save(image_path)
-
+        image_path_original = os.path.join(upload_folder, filename)
         # Passa o caminho da imagem para o template
-        return render_template("imagem.html", imagem=image_path)
+        return render_template("imagem.html", imagem=image_path_original)
     
     return render_template('index.html',placeholder=placeholder)
 
@@ -116,7 +116,11 @@ def salvar():
         return "Imagem não foi enviada", 400  # Retorna erro se imagem não foi fornecida
     
     print(arquivo)
-    tipo, imagem_name = arquivo.split('-', 1)
+    tipo,imagem_name = '',arquivo
+    for filtro in ["blurred", "pretoBranco", "cartoon", "negativa", "contorno", "escala"]:
+        if filtro in imagem_name:
+            tipo, imagem_name = arquivo.split('-', 1)
+
     print(imagem_name)
 
     user_id = session.get("user_id")  # Certifique-se de que session["user_id"] existe
@@ -133,6 +137,7 @@ def salvar():
             imagem_path = upload_folder + "/" + imagem_name
         print(f"{tipo} e {opcao}")
         if tipo == opcao and button == "save":
+            print(imagem_name)
             continue
         if opcao == '' and button == "descartar":
             imagem_path = upload_folder + "/" + imagem_name
