@@ -1,9 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+  
+
 }
 
 body {
@@ -18,17 +23,39 @@ body {
     color: #ecf0f1; 
     gap: 1rem;
     margin: 0;
+    background: linear-gradient(135deg, #4e7db9, #6a99c1, #9db7d7, #c7d7f1);
+
+
+}
+.titulo {
+    top: 1rem;
+    padding: 2rem;
+    font-size: 3rem; /* Tamanho maior */
+    font-weight: 700;
+    font-family: 'Dancing Script', cursive;
+    text-align: center;
+    margin-bottom: 1rem;
+    
+    width: auto; 
+    height: auto; 
+    display: inline-block;
+    color: #e2e2d4;  /* Cor do texto */
 }
 
 form {
-    background-color: #34495e;
+    background-color: rgba(0, 0, 0, 0.6);;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    width: 400px;
+    border-radius: 10px;
+    width: 450px;
     text-align: center;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
 }
 
+form:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    transform: scale(1.02);
+}
 h2 {
     color: #ecf0f1; 
     margin-bottom: 20px;
